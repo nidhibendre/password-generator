@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jun 18 21:00:52 2023
+
+@author: bendr
+"""
+import random
+import argparse
+
+parser = argparse.ArgumentParser(description= "Generate a secure, memorable password using the XKCD method")
+parser.add_argument("-w", "--words", type=int, default=4, help="include WORDS words in the password (default=4)")
+parser.add_argument("-c", "--caps", type=int, default=0, help="capitalize the first letter of CAPS random words (default=0)")
+parser.add_argument("-n", "--numbers", type=int, default=0, help="iinsert NUMBERS random numbers in the password (default=0)")
+parser.add_argument("-s", "--symbols", type=int, default=0, help="insert SYMBOLS random symbols in the password (default=0)")
+
+arg = parser.parse_args()
+
+with open ("words.txt", "r") as file:
+    words_list = [word.strip() for word in file.readlines()]
+ 
+pw_words = []    
+for i in range(arg.words):
+    if arg.caps > 0:
+        pw_words.append(random.choice(words_list).capitalize())
+        arg.caps -= 1
+    else:
+        pw_words.append(random.choice(words_list)) 
+
+random.shuffle(pw_words)
+       
+if arg.caps > arg.words:
+    print("ERROR: number of capitalizations exceeds number of words, best effort password generated:")
+    
+for i in range(arg.numbers):
+    num = str(random.randint(0,9))
+    pw_words.insert(random.randint(0, len(pw_words)), num)
+    
+    
+for i in range(arg.symbols):
+    sym = random.choice(["~", "!", "@", "#", "$", "%", "^", "&", "*", ".", ":", ";"])
+    pw_words.insert(random.randint(0, len(pw_words)), sym)
+    
+    
+
+password = "".join(pw_words)
+print(password)
